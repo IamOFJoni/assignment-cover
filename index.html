@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Cover Page Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { margin: 0; padding: 0; background: #e9ecef; font-family: 'Hind Siliguri', sans-serif; }
+        
+        /* Layout */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        /* Input Section (Left Side) */
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+            border-top: 5px solid #006400;
+        }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Hind Siliguri', sans-serif;
+            box-sizing: border-box; /* Fix width overflow */
+        }
+
+        /* Button */
+        .print-btn {
+            background: #006400;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .print-btn:hover { background: #004d00; }
+
+        /* PDF Preview Page (A4) */
+        .page-container {
+            background: gray;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            padding: 15mm;
+            box-sizing: border-box;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            margin: 0 auto;
+        }
+
+        /* Content Styling */
+        .border-box {
+            border: 3px solid #006400;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bismillah { height: 35px; margin-bottom: 5px; }
+        .logo { height: 110px; margin: 5px 0; object-fit: contain; }
+        
+        .uni-name { font-size: 26px; font-weight: 700; color: #006400; text-align: center; margin: 0; }
+        .sub-text { font-size: 16px; color: #555; margin: 2px 0; }
+        .madrasa-name { font-size: 28px; font-weight: 700; color: #2e5cb8; text-align: center; margin-bottom: 5px; line-height: 1.2; }
+        .address { font-size: 15px; margin-bottom: 25px; }
+        
+        .badge {
+            border: 2px solid #006400; color: #006400;
+            padding: 5px 40px; font-size: 22px; font-weight: bold;
+            border-radius: 50px; margin-bottom: 30px;
+        }
+
+        /* Info Grid */
+        .info-row { display: flex; font-size: 18px; margin-bottom: 8px; align-items: baseline; width: 100%; }
+        .label { width: 130px; font-weight: 700; flex-shrink: 0; }
+        .value { flex-grow: 1; border-bottom: 1px dotted #000; padding-left: 10px; font-weight: 500; }
+        
+        .section-head {
+            text-align: center; font-size: 18px; font-weight: bold;
+            text-decoration: underline; color: #006400; margin: 15px 0 8px 0; width: 100%;
+        }
+
+        .footer { margin-top: auto; border: 2px solid #006400; padding: 5px 20px; font-weight: 600; border-radius: 5px; }
+
+        /* ----------- PRINT MODE (The Magic Fix) ----------- */
+        @media print {
+            body { background: white; }
+            .controls, .page-container { padding: 0; background: none; }
+            .controls { display: none !important; } /* Hide Inputs */
+            .page-container { display: block !important; margin: 0; }
+            .a4-page {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 0; /* Remove Browser Margins */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="controls">
+        <h2 style="text-align:center; color:#006400; margin-top:0;">তথ্য পূরণ করুন</h2>
+        
+        <div class="input-group">
+            <label>মাদ্রাসার নাম:</label>
+            <input type="text" id="in_madrasa" value="জামেয়া আহমদিয়া সুন্নিয়া কামিল মাদ্রাসা" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>ঠিকানা:</label>
+            <input type="text" id="in_addr" value="ষোলশহর, পাঁচলাইশ, চট্টগ্রাম।" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>শিরোনাম:</label>
+            <input type="text" id="in_title" placeholder="অ্যাসাইনমেন্টের নাম..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>কোর্স নাম:</label>
+            <input type="text" id="in_course" placeholder="কোর্স নাম..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>কোর্স কোড:</label>
+            <input type="text" id="in_code" placeholder="কোর্স কোড..." oninput="up()">
+        </div>
+
+        <h3 style="border-bottom:1px solid #ddd; padding-bottom:5px;">শিক্ষক ও শিক্ষার্থী</h3>
+        
+        <div class="input-group">
+            <label>শিক্ষকের নাম:</label>
+            <input type="text" id="in_tname" placeholder="শিক্ষকের নাম..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>পদবি:</label>
+            <input type="text" id="in_tdesig" placeholder="পদবি..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>শিক্ষার্থীর নাম:</label>
+            <input type="text" id="in_name" placeholder="তোমার নাম..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>রেজিঃ নং:</label>
+            <input type="text" id="in_reg" placeholder="রোল/রেজি..." oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>শ্রেণি:</label>
+            <input type="text" id="in_class" value="কামিল (স্নাতকোত্তর)" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>বিভাগ:</label>
+            <input type="text" id="in_dept" value="আল হাদিস" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>জমা দেওয়ার তারিখ:</label>
+            <input type="text" id="in_date" value="২৪/০১/২০২৬ খ্রি." oninput="up()">
+        </div>
+
+        <button class="print-btn" onclick="window.print()">🖨️ PDF সেভ করুন (Save as PDF)</button>
+        <p style="text-align:center; font-size:12px; color:#555; margin-top:5px;">বাটনে ক্লিক করে প্রিন্ট অপশন থেকে <b>"Save as PDF"</b> সিলেক্ট করুন।</p>
+    </div>
+
+    <div class="page-container">
+        <div class="a4-page">
+            <div class="border-box">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/Basmala.svg" class="bismillah">
+                
+                <h1 class="uni-name">ইসলামি আরবি বিশ্ববিদ্যালয়, ঢাকা</h1>
+                
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEguY4N9RFPBYwiSd93cQ7a-MB_7H0MQW3iDc_XEUJHXmNMzYLZSsrzxFTPE_lXIpg1ZR54A6Myxe2bxOzVDb1v-y1DSxRuJ-PWRCkf04WkRf6SQQWV_z6EaK03ck5D5r4CRBhx4WlkqJ4ZY9Dc_OSXHkrV5E3qinhHIfRIAToSp67IojPc3NMjxAD1mYT0/s1600/iau-logo.png" class="logo">
+                
+                <div class="sub-text">এর অধিভুক্ত</div>
+                <div class="madrasa-name" id="out_madrasa">জামেয়া আহমদিয়া সুন্নিয়া কামিল মাদ্রাসা</div>
+                <div class="address" id="out_addr">ষোলশহর, পাঁচলাইশ, চট্টগ্রাম।</div>
+                
+                <div class="badge">অ্যাসাইনমেন্ট</div>
+
+                <div style="width:100%; margin-top:10px;">
+                    <div class="info-row">
+                        <div class="label">শিরোনাম:</div>
+                        <div class="value" id="out_title"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">কোর্স:</div>
+                        <div class="value" id="out_course"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">কোড:</div>
+                        <div class="value" id="out_code"></div>
+                    </div>
+
+                    <div class="section-head">নির্দেশনায়:</div>
+                    <div class="info-row">
+                        <div class="label">শিক্ষকের নাম:</div>
+                        <div class="value" id="out_tname">................................................</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">পদবি:</div>
+                        <div class="value" id="out_tdesig">................................................</div>
+                    </div>
+
+                    <div class="section-head">রচনায়:</div>
+                    <div class="info-row">
+                        <div class="label">নাম:</div>
+                        <div class="value" id="out_name"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">রেজিঃ নং:</div>
+                        <div class="value" id="out_reg"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">শ্রেণি:</div>
+                        <div class="value" id="out_class"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">বিভাগ:</div>
+                        <div class="value" id="out_dept"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">সেশন:</div>
+                        <div class="value">২০২৪-২৫</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    জমা দেওয়ার তারিখ: <span id="out_date">২৪/০১/২০২৬ খ্রি.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Update Function
+    function up() {
+        const ids = ['madrasa', 'addr', 'title', 'course', 'code', 'tname', 'tdesig', 'name', 'reg', 'class', 'dept', 'date'];
+        ids.forEach(id => {
+            const el = document.getElementById('in_' + id);
+            const out = document.getElementById('out_' + id);
+            if(el && out) out.innerText = el.value;
+        });
+    }
+    // Initial Call
+    up();
+</script>
+
+</body>
+</html>
