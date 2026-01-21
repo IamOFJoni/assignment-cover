@@ -63,6 +63,9 @@
             background: gray;
             padding: 20px;
             border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
         }
 
         .a4-page {
@@ -73,7 +76,8 @@
             box-sizing: border-box;
             position: relative;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            margin: 0 auto;
+            /* Ensure content doesn't overflow in preview */
+            overflow: hidden; 
         }
 
         /* Content Styling */
@@ -98,7 +102,7 @@
         .badge {
             border: 2px solid #006400; color: #006400;
             padding: 5px 40px; font-size: 22px; font-weight: bold;
-            border-radius: 50px; margin-bottom: 30px;
+            border-radius: 50px; margin-bottom: 25px;
         }
 
         /* Info Grid */
@@ -113,22 +117,28 @@
 
         .footer { margin-top: auto; border: 2px solid #006400; padding: 5px 20px; font-weight: 600; border-radius: 5px; }
 
-        /* ----------- PRINT MODE (The Magic Fix) ----------- */
+        /* ----------- PRINT MODE (A4 Adjustment Fix) ----------- */
         @media print {
-            body { background: white; }
-            .controls, .page-container { padding: 0; background: none; }
+            body { background: white; margin: 0; padding: 0; }
+            .controls, .page-container { padding: 0; background: none; margin: 0; }
             .controls { display: none !important; } /* Hide Inputs */
-            .page-container { display: block !important; margin: 0; }
+            .page-container { display: block !important; width: 100%; height: 100%; }
+            
+            /* Force A4 size and prevent overflow */
             .a4-page {
                 box-shadow: none;
-                margin: 0;
-                width: 100%;
-                height: 100%;
-                page-break-after: always;
+                margin: 0 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important; /* Critical for sticking to one page */
             }
+            
             @page {
                 size: A4 portrait;
-                margin: 0; /* Remove Browser Margins */
+                margin: 0; /* No browser margins for full-bleed A4 */
             }
         }
     </style>
@@ -183,8 +193,20 @@
             <input type="text" id="in_class" value="কামিল (স্নাতকোত্তর)" oninput="up()">
         </div>
         <div class="input-group">
+            <label>পর্ব:</label>
+            <input type="text" id="in_part" value="১ম পর্ব" oninput="up()">
+        </div>
+        <div class="input-group">
             <label>বিভাগ:</label>
             <input type="text" id="in_dept" value="আল হাদিস" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>সেশন:</label>
+            <input type="text" id="in_session" value="২০২৪-২৫" oninput="up()">
+        </div>
+        <div class="input-group">
+            <label>পরীক্ষার বছর:</label>
+            <input type="text" id="in_exam_year" value="২০২৪" oninput="up()">
         </div>
         <div class="input-group">
             <label>জমা দেওয়ার তারিখ:</label>
@@ -248,12 +270,20 @@
                         <div class="value" id="out_class"></div>
                     </div>
                     <div class="info-row">
+                        <div class="label">পর্ব:</div>
+                        <div class="value" id="out_part"></div>
+                    </div>
+                    <div class="info-row">
                         <div class="label">বিভাগ:</div>
                         <div class="value" id="out_dept"></div>
                     </div>
                     <div class="info-row">
                         <div class="label">সেশন:</div>
-                        <div class="value">২০২৪-২৫</div>
+                        <div class="value" id="out_session"></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="label">পরীক্ষার বছর:</div>
+                        <div class="value" id="out_exam_year"></div>
                     </div>
                 </div>
 
@@ -268,7 +298,8 @@
 <script>
     // Live Update Function
     function up() {
-        const ids = ['madrasa', 'addr', 'title', 'course', 'code', 'tname', 'tdesig', 'name', 'reg', 'class', 'dept', 'date'];
+        // Added 'part', 'session', and 'exam_year' to the list
+        const ids = ['madrasa', 'addr', 'title', 'course', 'code', 'tname', 'tdesig', 'name', 'reg', 'class', 'part', 'dept', 'session', 'exam_year', 'date'];
         ids.forEach(id => {
             const el = document.getElementById('in_' + id);
             const out = document.getElementById('out_' + id);
