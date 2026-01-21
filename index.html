@@ -3,85 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assignment Cover Page Generator</title>
+    <title>Assignment Cover Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Base Reset */
+        /* --- GENERAL RESET --- */
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         body { margin: 0; padding: 0; background: #e9ecef; font-family: 'Hind Siliguri', sans-serif; }
         
-        .container {
+        .main-container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: center;
             gap: 20px;
             padding: 20px;
-            justify-content: center;
         }
 
-        /* --- INPUT FORM --- */
-        .controls {
-            flex: 1;
-            min-width: 300px;
-            max-width: 450px;
+        /* --- INPUT PANEL (Left Side) --- */
+        .input-panel {
+            width: 350px;
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             height: fit-content;
-            border-top: 6px solid #006400;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-top: 5px solid #006400;
         }
 
         .input-group { margin-bottom: 10px; }
-        .input-group label { display: block; font-weight: 700; margin-bottom: 3px; font-size: 13px; color: #333; }
+        .input-group label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 3px; }
         .input-group input, .input-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-family: 'Hind Siliguri', sans-serif;
-            font-size: 15px;
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit;
         }
 
-        .print-btn {
-            background: #006400;
-            color: white;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: 0.2s;
+        .btn-print {
+            background: #006400; color: white; border: none; padding: 12px; width: 100%;
+            font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px;
         }
-        .print-btn:hover { background: #004d00; transform: translateY(-1px); }
+        .btn-print:hover { background: #004d00; }
 
-        /* --- PREVIEW AREA --- */
-        .page-container {
+        /* --- PREVIEW AREA (Right Side) --- */
+        .preview-area {
             background: #555;
             padding: 20px;
             border-radius: 8px;
-            display: flex;
-            justify-content: center;
             overflow: auto;
         }
 
-        /* A4 Page Logic */
+        /* --- A4 PAGE DESIGN --- */
         .a4-page {
             width: 210mm;
             height: 297mm;
             background: white;
+            /* Padding adjustment for proper centering */
             padding: 12mm; 
             position: relative;
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            overflow: hidden; 
             margin: 0 auto;
         }
 
-        /* Green Border Box */
-        .border-box {
+        .border-frame {
             border: 3px solid #006400;
             width: 100%;
             height: 100%;
@@ -92,115 +73,69 @@
             justify-content: space-between;
         }
 
-        /* Design Elements */
-        .header-section { text-align: center; width: 100%; }
+        /* Header */
+        .header { text-align: center; width: 100%; }
         .bismillah { height: 35px; margin-bottom: 5px; }
-        .uni-name { font-size: 26px; font-weight: 700; color: #006400; margin: 0; line-height: 1.2; }
-        
-        .logo { height: 100px; width: auto; object-fit: contain; margin: 5px 0; }
-        
-        .sub-text { font-size: 15px; color: #555; margin: 2px 0; }
-        .madrasa-name { font-size: 28px; font-weight: 700; color: #2e5cb8; margin: 2px 0; line-height: 1.2; }
-        .address { font-size: 15px; color: #333; margin-bottom: 10px; }
+        .uni-title { font-size: 26px; font-weight: 700; color: #006400; margin: 0; line-height: 1.2; }
+        .logo { height: 100px; object-fit: contain; margin: 5px 0; }
+        .sub-title { font-size: 15px; color: #555; margin: 2px 0; }
+        .madrasa-title { font-size: 28px; font-weight: 700; color: #2e5cb8; margin: 2px 0; line-height: 1.2; }
+        .address { font-size: 15px; margin-bottom: 10px; }
         
         .badge {
-            border: 2px solid #006400; 
-            color: #006400;
-            padding: 4px 35px; 
-            font-size: 22px; 
-            font-weight: 700;
-            border-radius: 50px; 
-            display: inline-block;
-            margin-bottom: 10px;
+            border: 2px solid #006400; color: #006400; padding: 4px 35px;
+            font-size: 22px; font-weight: 700; border-radius: 50px; display: inline-block;
         }
 
-        /* Content Table */
-        .content-body { width: 100%; flex-grow: 1; padding-top: 5px; }
+        /* Content */
+        .content { width: 100%; flex-grow: 1; padding-top: 5px; }
+        .row { display: flex; font-size: 17px; margin-bottom: 8px; align-items: flex-end; }
+        .lbl { width: 130px; font-weight: 700; flex-shrink: 0; }
+        .val { flex-grow: 1; border-bottom: 1px dotted #000; padding-left: 10px; font-weight: 500; min-height: 24px; }
         
-        .info-row { 
-            display: flex; 
-            font-size: 17px; /* Reduced Font Size as requested */
-            margin-bottom: 8px; 
-            align-items: flex-end; 
-            width: 100%; 
-        }
-        
-        .label { width: 130px; font-weight: 700; flex-shrink: 0; color: #000; }
-        .value { 
-            flex-grow: 1; 
-            border-bottom: 1px dotted #000; 
-            padding-left: 10px; 
-            font-weight: 500; 
-            color: #000;
-            min-height: 24px;
-        }
-        
-        .section-head {
-            text-align: center; 
-            font-size: 18px; 
-            font-weight: 700;
-            text-decoration: underline; 
-            color: #006400; 
-            margin: 10px 0 6px 0; 
-            width: 100%;
+        .sec-title {
+            text-align: center; font-size: 18px; font-weight: 700;
+            text-decoration: underline; color: #006400; margin: 10px 0 5px 0;
         }
 
+        /* Footer */
         .footer { 
-            border: 2px solid #006400; 
-            padding: 5px 25px; 
-            font-weight: 700; 
-            border-radius: 6px; 
-            font-size: 16px;
-            margin-top: 5px;
+            border: 2px solid #006400; padding: 5px 20px; font-weight: 700; 
+            border-radius: 5px; font-size: 16px; margin-top: 5px; 
         }
 
-        /* --- STRICT PRINT CSS (Fixed Blank Page Issue) --- */
+        /* --- PRINT CSS (THE FIX) --- */
         @media print {
-            body { 
-                background: white; 
-                margin: 0; 
-                padding: 0; 
-            }
-            .container {
-                display: block;
-                padding: 0;
-                margin: 0;
-            }
+            /* 1. Reset Body */
+            body { margin: 0; padding: 0; background: white; }
             
-            /* Hide Control Panel */
-            .controls { display: none !important; }
-            
-            /* Show Preview Container but remove styling */
-            .page-container {
-                display: block !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-                border-radius: 0;
-            }
+            /* 2. Hide Input Panel & Container styling */
+            .input-panel { display: none !important; }
+            .preview-area { background: white; padding: 0; margin: 0; border: none; }
+            .main-container { display: block; padding: 0; margin: 0; }
 
-            /* Main Page Settings */
+            /* 3. Force A4 Page visibility */
             .a4-page {
+                box-shadow: none;
+                margin: 0 auto;
                 width: 210mm;
                 height: 297mm;
-                margin: 0 auto;
-                padding: 10mm !important; /* Adjusted Padding */
-                box-shadow: none;
                 page-break-after: avoid;
             }
 
+            /* 4. Page Setup */
             @page {
                 size: A4 portrait;
-                margin: 0;
+                margin: 0; /* Remove browser default margin */
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="controls">
-        <h3 style="text-align:center; color:#006400; margin-top:0; border-bottom:2px solid #ddd; padding-bottom:10px;">তথ্য পূরণ করুন</h3>
+<div class="main-container">
+    <div class="input-panel">
+        <h3 style="text-align:center; margin-top:0; color:#006400;">তথ্য পূরণ করুন</h3>
         
         <div class="input-group">
             <label>মাদ্রাসার নাম:</label>
@@ -222,9 +157,9 @@
             <label>কোর্স কোড:</label>
             <input type="text" id="in_code" placeholder="কোর্স কোড" oninput="up()">
         </div>
-
-        <h4 style="margin: 15px 0 10px 0; color:#006400;">শিক্ষক ও শিক্ষার্থী</h4>
         
+        <hr style="border:0; border-top:1px solid #ddd; margin:10px 0;">
+
         <div class="input-group">
             <label>শিক্ষকের নাম:</label>
             <input type="text" id="in_tname" placeholder="শিক্ষকের নাম" oninput="up()">
@@ -239,16 +174,15 @@
         </div>
         <div class="input-group">
             <label>রেজিঃ নং:</label>
-            <input type="text" id="in_reg" placeholder="রোল/রেজি নং" oninput="up()">
+            <input type="text" id="in_reg" placeholder="রোল/রেজি" oninput="up()">
         </div>
         <div class="input-group">
             <label>শ্রেণি:</label>
             <input type="text" id="in_class" value="কামিল (স্নাতকোত্তর)" oninput="up()">
         </div>
-        
         <div class="input-group">
-            <label>পর্ব (Semester):</label>
-            <select id="in_part" onchange="up()" style="padding:8px; width:100%; border:1px solid #ccc; border-radius:5px;">
+            <label>পর্ব:</label>
+            <select id="in_part" onchange="up()">
                 <option>১ম পর্ব</option>
                 <option>২য় পর্ব</option>
                 <option>ফাইনাল ইয়ার</option>
@@ -267,86 +201,47 @@
             <input type="text" id="in_exam_year" value="২০২৪" oninput="up()">
         </div>
         <div class="input-group">
-            <label>জমা দেওয়ার তারিখ:</label>
+            <label>তারিখ:</label>
             <input type="date" id="in_date" oninput="formatDate(this.value)">
         </div>
 
-        <button class="print-btn" onclick="window.print()">🖨️ প্রিন্ট / PDF সেভ করুন</button>
-        <p style="text-align:center; font-size:12px; color:#555; margin-top:5px;">
-            ⚠️ প্রিন্ট সেটিংসে <b>"Background graphics"</b> টিক দিন।
+        <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট / Save PDF</button>
+        <p style="font-size:12px; color:red; text-align:center; margin-top:5px;">
+            অবশ্যই প্রিন্ট সেটিংসে <b>"Background Graphics"</b> টিক দিন।
         </p>
     </div>
 
-    <div class="page-container">
+    <div class="preview-area">
         <div class="a4-page">
-            <div class="border-box">
+            <div class="border-frame">
                 
-                <div class="header-section">
+                <div class="header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/Basmala.svg" class="bismillah">
-                    <h1 class="uni-name">ইসলামি আরবি বিশ্ববিদ্যালয়, ঢাকা</h1>
-                    
+                    <h1 class="uni-title">ইসলামি আরবি বিশ্ববিদ্যালয়, ঢাকা</h1>
                     <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEguY4N9RFPBYwiSd93cQ7a-MB_7H0MQW3iDc_XEUJHXmNMzYLZSsrzxFTPE_lXIpg1ZR54A6Myxe2bxOzVDb1v-y1DSxRuJ-PWRCkf04WkRf6SQQWV_z6EaK03ck5D5r4CRBhx4WlkqJ4ZY9Dc_OSXHkrV5E3qinhHIfRIAToSp67IojPc3NMjxAD1mYT0/s1600/iau-logo.png" class="logo">
-                    
-                    <div class="sub-text">এর অধিভুক্ত</div>
-                    <div class="madrasa-name" id="out_madrasa">জামেয়া আহমদিয়া সুন্নিয়া কামিল মাদ্রাসা</div>
+                    <div class="sub-title">এর অধিভুক্ত</div>
+                    <div class="madrasa-title" id="out_madrasa">জামেয়া আহমদিয়া সুন্নিয়া কামিল মাদ্রাসা</div>
                     <div class="address" id="out_addr">ষোলশহর, পাঁচলাইশ, চট্টগ্রাম।</div>
                     <div class="badge">অ্যাসাইনমেন্ট</div>
                 </div>
 
-                <div class="content-body">
-                    <div class="info-row">
-                        <div class="label">শিরোনাম:</div>
-                        <div class="value" id="out_title"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">কোর্স:</div>
-                        <div class="value" id="out_course"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">কোড:</div>
-                        <div class="value" id="out_code"></div>
-                    </div>
+                <div class="content">
+                    <div class="row"><div class="lbl">শিরোনাম:</div><div class="val" id="out_title"></div></div>
+                    <div class="row"><div class="lbl">কোর্স:</div><div class="val" id="out_course"></div></div>
+                    <div class="row"><div class="lbl">কোড:</div><div class="val" id="out_code"></div></div>
 
-                    <div class="section-head">নির্দেশনায়:</div>
-                    <div class="info-row">
-                        <div class="label">শিক্ষকের নাম:</div>
-                        <div class="value" id="out_tname">...............................................</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">পদবি:</div>
-                        <div class="value" id="out_tdesig">...............................................</div>
-                    </div>
+                    <div class="sec-title">নির্দেশনায়:</div>
+                    <div class="row"><div class="lbl">শিক্ষকের নাম:</div><div class="val" id="out_tname">...............................................</div></div>
+                    <div class="row"><div class="lbl">পদবি:</div><div class="val" id="out_tdesig">...............................................</div></div>
 
-                    <div class="section-head">রচনায়:</div>
-                    <div class="info-row">
-                        <div class="label">নাম:</div>
-                        <div class="value" id="out_name"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">রেজিঃ নং:</div>
-                        <div class="value" id="out_reg"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">শ্রেণি:</div>
-                        <div class="value" id="out_class"></div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="label">পর্ব:</div>
-                        <div class="value" id="out_part">১ম পর্ব</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">বিভাগ:</div>
-                        <div class="value" id="out_dept"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">সেশন:</div>
-                        <div class="value" id="out_session"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="label">পরীক্ষার বছর:</div>
-                        <div class="value" id="out_exam_year"></div>
-                    </div>
+                    <div class="sec-title">রচনায়:</div>
+                    <div class="row"><div class="lbl">নাম:</div><div class="val" id="out_name"></div></div>
+                    <div class="row"><div class="lbl">রেজিঃ নং:</div><div class="val" id="out_reg"></div></div>
+                    <div class="row"><div class="lbl">শ্রেণি:</div><div class="val" id="out_class"></div></div>
+                    <div class="row"><div class="lbl">পর্ব:</div><div class="val" id="out_part">১ম পর্ব</div></div>
+                    <div class="row"><div class="lbl">বিভাগ:</div><div class="val" id="out_dept"></div></div>
+                    <div class="row"><div class="lbl">সেশন:</div><div class="val" id="out_session"></div></div>
+                    <div class="row"><div class="lbl">পরীক্ষার বছর:</div><div class="val" id="out_exam_year"></div></div>
                 </div>
 
                 <div class="footer">
@@ -359,6 +254,7 @@
 </div>
 
 <script>
+    // Initial Date
     document.getElementById('in_date').valueAsDate = new Date();
     formatDate(new Date());
 
@@ -368,8 +264,7 @@
             let day = String(d.getDate()).padStart(2, '0');
             let month = String(d.getMonth() + 1).padStart(2, '0');
             let year = d.getFullYear();
-            let finalDate = `${day}/${month}/${year} খ্রি.`;
-            document.getElementById('out_date').innerText = finalDate;
+            document.getElementById('out_date').innerText = `${day}/${month}/${year} খ্রি.`;
         }
     }
 
@@ -381,7 +276,7 @@
             if(el && out) out.innerText = el.value;
         });
     }
-    up(); 
+    up();
 </script>
 
 </body>
